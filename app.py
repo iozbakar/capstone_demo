@@ -266,4 +266,4 @@ def predict_apples():
     return model.good_apple_count, model.mid_apple_count, model.bad_apple_count, model
  
 if __name__ == "__main__":
-    app.run(host="0.0.0.0",debug=True, threaded=True)
+    app.run(host="0.0.0.0",debug=False)
