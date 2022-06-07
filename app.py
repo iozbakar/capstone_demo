@@ -14,10 +14,10 @@ import pandas as pd
 
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+vc = cv2.VideoCapture(0) 
 app = Flask(__name__)
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 save = os.path.join(APP_ROOT, 'save/')
-vc = cv2.VideoCapture(0) 
 REPORTS_FOLDER = os.path.join(APP_ROOT, 'reports/')
 
 @app.route('/report_images/<id>/photos/<path:filename>/<path:i><format>')
@@ -85,10 +85,12 @@ def reports_page():
 def gen(): 
    """Video streaming generator function.""" 
    while True: 
-       rval, frame = vc.read() 
-       cv2.imwrite('static/temp_img/pic.jpg', frame) 
-       yield (b'--frame\r\n' 
-              b'Content-Type: image/jpeg\r\n\r\n' + open('static/temp_img/pic.jpg', 'rb').read() + b'\r\n') 
+       rval, frame = vc.read()
+       if not rval:
+           break
+       else: 
+            cv2.imwrite('static/temp_img/pic.jpg', frame) 
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + open('static/temp_img/pic.jpg', 'rb').read() + b'\r\n') 
 
 @app.route('/video_feed') 
 def video_feed(): 
