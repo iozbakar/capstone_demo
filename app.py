@@ -15,11 +15,25 @@ import pandas as pd
 
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-vc = cv2.VideoCapture(0) 
+vc = cv2.VideoCapture(0, cv2.CAP_V4L2) 
 app = Flask(__name__)
 APP_ROOT = os.path.dirname(os.path.abspath(__file__))
 save = os.path.join(APP_ROOT, 'save/')
 REPORTS_FOLDER = os.path.join(APP_ROOT, 'reports/')
+
+
+def video_stream():
+    while True:
+        ret, frame = video.read()
+        if not ret:
+            break;
+        else:
+            ret, buffer = cv2.imencode('.jpeg',frame)
+            frame = buffer.tobytes()
+            yield (b' --frame\r\n' b'Content-type: imgae/jpeg\r\n\r\n' + frame +b'\r\n')
+            
+            
+            
 
 @app.route('/report_images/<id>/photos/<path:filename>/<path:i><format>')
 def download_file(filename,id,i,format):
@@ -93,20 +107,7 @@ def gen():
             cv2.imwrite('static/temp_img/pic.jpg', frame) 
             yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + open('static/temp_img/pic.jpg', 'rb').read() + b'\r\n') 
 
-            
-def video_stream():
-    while True:
-        ret, frame = video.read()
-        if not ret:
-            break;
-        else:
-            ret, buffer = cv2.imencode('.jpeg',frame)
-            frame = buffer.tobytes()
-            yield (b' --frame\r\n' b'Content-type: imgae/jpeg\r\n\r\n' + frame +b'\r\n')
-            
-            
-            
-            
+                        
             
             
 @app.route('/video_feed') 
